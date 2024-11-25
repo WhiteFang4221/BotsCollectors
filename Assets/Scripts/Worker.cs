@@ -3,25 +3,21 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Worker : MonoBehaviour
+public class Worker : PoolableObject<Worker>
 {
     [SerializeField] private WorkersTrunk _trunk;
-
     private Transform _targetPosition;
-
     private WorkerStateMachine _stateMachine;
-
     private NavMeshAgent _agent;
     
-    public event Action<Worker, Transform> ResourceCollected;
-
+    public event Action<Worker, Transform> ResourceHasGiven;
 
     public bool IsBusy { get; private set; } = false;
-    public WorkersTrunk Trunk => _trunk;
-    public Transform TargetTransform => _targetPosition;
-    public Transform MotherbasePosition { get; private set; }
     public Collider MotherbaseCollider { get; private set; }
+
     public NavMeshAgent Agent => _agent;
+    public Transform TargetTransform => _targetPosition;
+    public WorkersTrunk Trunk => _trunk;
 
     private void Awake()
     {
@@ -34,23 +30,21 @@ public class Worker : MonoBehaviour
         _stateMachine.Update();
     }
 
-    public void SetTargetResource(Transform resourcePosition)
+    public void InitializeMotherbase(Collider motherbaseCollider)
     {
-        Debug.Log($"{GetInstanceID()}   - Еду за ресурсоом");
-        _targetPosition = resourcePosition;
-        IsBusy = true;
+        MotherbaseCollider = motherbaseCollider;
     }
 
-    public void SetMotherbaseData(Collider collider, Transform transform)
+    public void SetTargetResource(Transform resourcePosition)
     {
-        MotherbaseCollider = collider;
-        MotherbasePosition = transform;
+        _targetPosition = resourcePosition;
+        IsBusy = true;
     }
 
     public void GiveResourceToBase(Transform resource)
     {
         IsBusy = false;
         _targetPosition = null;
-        ResourceCollected?.Invoke(this, resource);
+        ResourceHasGiven?.Invoke(this, resource);
     }
 }

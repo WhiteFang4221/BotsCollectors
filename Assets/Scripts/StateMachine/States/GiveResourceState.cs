@@ -1,4 +1,3 @@
-using Assets.Scripts.StateMachine;
 using UnityEngine;
 
 public class GiveResourceState : WorkerState
@@ -8,22 +7,16 @@ public class GiveResourceState : WorkerState
     private float _speedGiving;
     private float _tolerance = 0.01f;
 
-    public GiveResourceState(IStateSwitcher stateSwitcher, WorkerStateMachineData data, Worker worker) : base(stateSwitcher, data, worker)
-    {
-    }
-
+    public GiveResourceState(IStateSwitcher stateSwitcher, WorkerStateMachineData data, Worker worker) : base(stateSwitcher, data, worker) { }
     public override void Enter()
     {
         _resourceTransform = Worker.TargetTransform;
-        _motherbaseTransform = Worker.MotherbasePosition;
+        _motherbaseTransform = Worker.MotherbaseCollider.transform;
+
         float distance = Vector3.Distance(_resourceTransform.position, _motherbaseTransform.position);
         _speedGiving = distance / Data.DurationLoadingResource;
     }
 
-    public override void Exit()
-    {
-
-    }
 
     public override void Update()
     {
@@ -37,4 +30,6 @@ public class GiveResourceState : WorkerState
             _resourceTransform.position = Vector3.MoveTowards(_resourceTransform.position, _motherbaseTransform.position, _speedGiving * Time.deltaTime);
         }
     }
+
+    public override void Exit() { }
 }

@@ -1,4 +1,3 @@
-using Assets.Scripts.StateMachine;
 using UnityEngine;
 
 public class MoveToMotherbaseState : WorkerState
@@ -11,9 +10,7 @@ public class MoveToMotherbaseState : WorkerState
     private float _stopDistance = 1f;
     private float _offsetRadius = 2f;
 
-    public MoveToMotherbaseState(IStateSwitcher stateSwitcher, WorkerStateMachineData data, Worker worker) : base(stateSwitcher, data, worker)
-    {
-    }
+    public MoveToMotherbaseState(IStateSwitcher stateSwitcher, WorkerStateMachineData data, Worker worker) : base(stateSwitcher, data, worker) { }
 
     public override void Enter()
     {
@@ -24,13 +21,9 @@ public class MoveToMotherbaseState : WorkerState
         Worker.Agent.stoppingDistance = _stopDistance;
     }
 
-    public override void Exit()
-    {
-    }
 
     public override void Update()
     {
-
         if (Vector3.Distance(_transform.position, _target) <= Data.MinDistanceToMotherbase)
         {
             Worker.Agent.isStopped = true;
@@ -45,11 +38,12 @@ public class MoveToMotherbaseState : WorkerState
     {
         {
             Vector3 closestPoint = _motherbaseCollider.ClosestPoint(_transform.position);
-
             Vector3 randomOffset = Random.insideUnitSphere * _offsetRadius;
             randomOffset.y = 0;
 
             return closestPoint + randomOffset;
         }
     }
+
+    public override void Exit() { }
 }

@@ -1,7 +1,5 @@
-﻿namespace Assets.Scripts.StateMachine
+﻿public interface IStateSwitcher
 {
-    public interface IStateSwitcher
-    {
-        void SwitchState<State>() where State : IState;
-    }
+    void SwitchState<State>() where State : IState;
 }
+

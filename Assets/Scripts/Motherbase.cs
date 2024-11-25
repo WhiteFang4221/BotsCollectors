@@ -1,40 +1,51 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 public class Motherbase : MonoBehaviour
 {
-    [SerializeField] private List<Worker> _workers;
     [SerializeField] private ResourceScanner _resourceScanner;
+    [SerializeField] private WorkerSpawner _workerSpawner;
+    [SerializeField] private Collider _workerSpawnArea;
+    [SerializeField] private float _availableResources = 0;
+
+    private Collider _baseCollider;
+    private List<Worker> _workers = new List<Worker>();
+    private int _minWorkersCount = 3;
 
     private List<Transform> _foundResources = new List<Transform>();
     private HashSet<Transform> _resourcesInProgress = new HashSet<Transform>();
 
-    private Collider _collider;
-
-    private float _availableResources = 0;
-
-    private bool _isWork = true;
-
-    private WaitForSeconds _scanDelay = new WaitForSeconds(10f); 
-
-    private void Awake()
+    private void OnEnable()
     {
-        StartCoroutine(ScaningAreaRoutine());
+        _workerSpawner.WorkerSpawned += AddWorker;
     }
 
     private void Start()
     {
-        _collider = GetComponent<Collider>();
+        _baseCollider = GetComponent<Collider>();
+
+        for (int i = 0; i < _minWorkersCount; i++)
+        {
+            _workerSpawner.SpawnWorker(_workerSpawnArea);
+        }
     }
 
     private void Update()
     {
-        if (_foundResources.Count > 0)
+        if (_workers.Count == 0)
+        {
+            return;
+        }
+
+        if (_foundResources.Count > 0 && _resourcesInProgress.Count < _workers.Count)
         {
             SendWorkerAtResource();
-        }  
+        }
+        else
+        {
+            ScanTheArea();
+        }
     }
 
     private void SendWorkerAtResource()
@@ -43,13 +54,12 @@ public class Motherbase : MonoBehaviour
         {
             if (worker.IsBusy == false)
             {
-                worker.SetMotherbaseData(_collider, transform);
                 foreach (Transform resource in _foundResources)
                 {
                     if (_resourcesInProgress.Contains(resource) == false)
                     {
                         _resourcesInProgress.Add(resource);
-                        worker.ResourceCollected += OnResourceCollected;
+                        worker.ResourceHasGiven += OnResourceCollected;
                         worker.SetTargetResource(resource);
                         break;
                     }
@@ -58,32 +68,33 @@ public class Motherbase : MonoBehaviour
         }
     }
 
-    private void OnResourceCollected(Worker worker, Transform resource)
-    {
-        _resourcesInProgress.Remove(resource);
-        _foundResources.Remove(resource);
-        worker.ResourceCollected -= OnResourceCollected;
-        ReceiveResource();
-        Destroy(resource.gameObject);
-    }
-
     private void ScanTheArea()
     {
         _foundResources = _resourceScanner.GetResourceInRange();
-        Debug.Log($"{_foundResources.Count} В области");
-    }
-
-    private IEnumerator ScaningAreaRoutine()
-    {
-        while (_isWork)
-        {
-            ScanTheArea();  
-            yield return _scanDelay;
-        }
     }
 
     private void ReceiveResource()
     {
         _availableResources++;
+    }
+
+    private void AddWorker(Worker worker)
+    {
+        _workers.Add(worker);
+        worker.InitializeMotherbase(_baseCollider);
+    }
+
+    private void OnResourceCollected(Worker worker, Transform resource)
+    {
+        _foundResources.Remove(resource);
+        _resourcesInProgress.Remove(resource);
+        worker.ResourceHasGiven -= OnResourceCollected;
+        ReceiveResource();
+
+        if (resource.TryGetComponent(out Resource component))
+        {
+            component.BackToPool();
+            component.Disable();
+        }
     }
 }

@@ -6,6 +6,7 @@ public class ResourceScanner : MonoBehaviour
 {
     [SerializeField] private LayerMask _resourceLayer;
     [SerializeField] private SphereCollider _scanArea;
+
     private List<Transform> _foundResources = new List<Transform>(); 
 
     public List<Transform> GetResourceInRange()
@@ -24,18 +25,7 @@ public class ResourceScanner : MonoBehaviour
             }
         }
 
-         return _foundResources.OrderBy(resource => Vector3.Distance(transform.position, resource.position)).ToList();
-        
-    }
-
-    private void OnDrawGizmos()
-    {
-
-        Vector3 sphereCenter = _scanArea.transform.position + _scanArea.center * _scanArea.transform.lossyScale.x;
-        float radius = _scanArea.radius * _scanArea.transform.lossyScale.x;
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(sphereCenter, radius);
+        return _foundResources.OrderBy(resource => Vector3.Distance(transform.position, resource.position)).ToList();
     }
 }
 

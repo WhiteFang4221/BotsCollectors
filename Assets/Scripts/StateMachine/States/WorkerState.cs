@@ -1,5 +1,3 @@
-using Assets.Scripts.StateMachine;
-
 public abstract class WorkerState : IState
 {
     protected readonly IStateSwitcher StateSwitcher;
@@ -16,6 +14,4 @@ public abstract class WorkerState : IState
     public abstract void Enter();
     public abstract void Update();
     public abstract void Exit();
-
-
 }

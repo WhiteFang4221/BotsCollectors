@@ -1,5 +1,3 @@
 using UnityEngine;
 
-public class WorkersTrunk : MonoBehaviour
-{
-}
+public class WorkersTrunk : MonoBehaviour { }

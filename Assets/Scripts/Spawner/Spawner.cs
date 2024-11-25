@@ -1,13 +1,14 @@
 using UnityEngine;
 
-public class Spawner<T> : MonoBehaviour where T : PoolableObject<T>
+public abstract class Spawner<T> : MonoBehaviour where T : PoolableObject<T>
 {
     [SerializeField] private Pool<T> _objectPool;
 
-    public virtual void SpawnObject(Vector3 vector)
+    protected virtual T SpawnObject(Vector3 vector)
     {
         T createdObject = _objectPool.Get(vector);
         createdObject.Disabled += DestroyObject;
+        return createdObject;
     }
 
     private void DestroyObject(T spawnableObject)

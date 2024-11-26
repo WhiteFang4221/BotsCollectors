@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Pool<T> : MonoBehaviour where T : MonoBehaviour
+public abstract class Pool<T> : MonoBehaviour where T : PoolableObject<T>
 {
     [SerializeField] private T _prefab;
     [SerializeField] private Transform _parentTransform;

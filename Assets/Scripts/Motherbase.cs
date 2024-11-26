@@ -21,6 +21,11 @@ public class Motherbase : MonoBehaviour
         _workerSpawner.WorkerSpawned += AddWorker;
     }
 
+    private void OnDisable()
+    {
+        _workerSpawner.WorkerSpawned -= AddWorker;
+    }
+
     private void Start()
     {
         _baseCollider = GetComponent<Collider>();
@@ -33,11 +38,6 @@ public class Motherbase : MonoBehaviour
 
     private void Update()
     {
-        if (_workers.Count == 0)
-        {
-            return;
-        }
-
         if (_foundResources.Count > 0 && _resourcesInProgress.Count < _workers.Count)
         {
             SendWorkerAtResource();

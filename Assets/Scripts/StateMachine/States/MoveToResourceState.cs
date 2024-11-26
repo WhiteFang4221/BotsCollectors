@@ -17,7 +17,7 @@ public class MoveToResourceState : WorkerState
 
     public override void Update()
     {
-        if (Vector3.Distance(_transform.position, _target.position) <= Data.MinDistanceToResource)
+        if (_transform.position.IsEnoughClose(_target.position, Data.MinDistanceToResource))
         {
             Worker.Agent.isStopped = true;
             Worker.Agent.velocity = Vector3.zero;

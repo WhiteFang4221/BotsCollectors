@@ -1,4 +1,5 @@
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class LoadingResourceState : WorkerState
 {
@@ -13,22 +14,21 @@ public class LoadingResourceState : WorkerState
     {
         _resourceTransform = Worker.TargetTransform;
         _trunkTransform = Worker.Trunk.transform;
-
         float distance = Vector3.Distance(_resourceTransform.position, _trunkTransform.position);
         _speedLoading = distance / Data.DurationLoadingResource;
     }
 
     public override void Update()
     {
-        if (Vector3.Distance(_resourceTransform.position, _trunkTransform.position) > _tolerance)
-        {
-            _resourceTransform.position = Vector3.MoveTowards(_resourceTransform.position, _trunkTransform.position, _speedLoading * Time.deltaTime);
-            _resourceTransform.rotation = Quaternion.Lerp(_resourceTransform.rotation, _trunkTransform.rotation, _speedLoading * Time.deltaTime);
-        }
-        else
+        if (_resourceTransform.position.IsEnoughClose(_trunkTransform.position, _tolerance))
         {
             _resourceTransform.SetParent(_trunkTransform);
             StateSwitcher.SwitchState<MoveToMotherbaseState>();
+        }
+        else
+        {
+            _resourceTransform.position = Vector3.MoveTowards(_resourceTransform.position, _trunkTransform.position, _speedLoading * Time.deltaTime);
+            _resourceTransform.rotation = Quaternion.Lerp(_resourceTransform.rotation, _trunkTransform.rotation, _speedLoading * Time.deltaTime);
         }
     }
 

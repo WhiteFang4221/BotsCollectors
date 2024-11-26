@@ -5,18 +5,15 @@ public class WorkerSpawner : Spawner<Worker>
 {
     private float _checkRadius = 5f;
 
-    private Collider _spawnArea;
-
     public event Action<Worker> WorkerSpawned;
 
     public void SpawnWorker(Collider spawnCollider)
     {
-        _spawnArea = spawnCollider;
         Vector3 newPosition;
 
         do
         {
-            newPosition = GetRandomPosition();
+            newPosition = GetRandomPosition(spawnCollider);
         }
         while (IsPositionOccupied(newPosition));
 
@@ -39,10 +36,10 @@ public class WorkerSpawner : Spawner<Worker>
         return false;
     }
 
-    private Vector3 GetRandomPosition()
+    private Vector3 GetRandomPosition(Collider spawnCollider)
     {
-        Vector3 spawnAreaSize = _spawnArea.bounds.size;
-        Vector3 spawnAreaCenter = _spawnArea.bounds.center;
+        Vector3 spawnAreaSize = spawnCollider.bounds.size;
+        Vector3 spawnAreaCenter = spawnCollider.bounds.center;
 
         float randomX = UnityEngine.Random.Range(spawnAreaCenter.x - spawnAreaSize.x / 2f, spawnAreaCenter.x + spawnAreaSize.x / 2f);
         float randomZ = UnityEngine.Random.Range(spawnAreaCenter.z - spawnAreaSize.z / 2f, spawnAreaCenter.z + spawnAreaSize.z / 2f);

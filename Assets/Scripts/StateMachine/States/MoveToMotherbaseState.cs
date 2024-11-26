@@ -24,7 +24,7 @@ public class MoveToMotherbaseState : WorkerState
 
     public override void Update()
     {
-        if (Vector3.Distance(_transform.position, _target) <= Data.MinDistanceToMotherbase)
+        if (_transform.position.IsEnoughClose(_target, Data.MinDistanceToMotherbase))
         {
             Worker.Agent.isStopped = true;
             Worker.Agent.velocity = Vector3.zero;

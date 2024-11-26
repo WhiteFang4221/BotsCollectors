@@ -20,7 +20,7 @@ public class GiveResourceState : WorkerState
 
     public override void Update()
     {
-        if (Vector3.Distance(_resourceTransform.position, _motherbaseTransform.position) < _tolerance)
+        if (_resourceTransform.position.IsEnoughClose(_motherbaseTransform.position, _tolerance))
         {
             Worker.GiveResourceToBase(_resourceTransform);
             StateSwitcher.SwitchState<IdlingState>();

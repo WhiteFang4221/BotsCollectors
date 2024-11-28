@@ -1,1 +1,4 @@
-public class Resource : PoolableObject<Resource> { }
+public class Resource : PoolableObject<Resource>
+{
+
+}

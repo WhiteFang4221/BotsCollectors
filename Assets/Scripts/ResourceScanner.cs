@@ -5,6 +5,7 @@ using UnityEngine;
 public class ResourceScanner : MonoBehaviour
 {
     [SerializeField] private SphereCollider _scanArea;
+    [SerializeField] private LayerMask _resourceMask;
 
     public List<Transform> GetResourceInRange()
     {
@@ -12,7 +13,7 @@ public class ResourceScanner : MonoBehaviour
 
         Vector3 sphereCenter = _scanArea.transform.position + _scanArea.center * _scanArea.transform.lossyScale.x;
         float radius = _scanArea.radius * _scanArea.transform.lossyScale.x;
-        Collider[] hitColliders = Physics.OverlapSphere(sphereCenter, radius);
+        Collider[] hitColliders = Physics.OverlapSphere(sphereCenter, radius, _resourceMask);
 
         foreach (Collider collider in hitColliders)
         {
@@ -22,7 +23,7 @@ public class ResourceScanner : MonoBehaviour
             }
         }
 
-        return foundResources.OrderBy(resource => Vector3.Distance(transform.position, resource.position)).ToList();
+        return foundResources.OrderBy(resource => resource.transform.position.SqrDistance(resource.position)).ToList();
     }
 }
 

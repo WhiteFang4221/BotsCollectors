@@ -93,7 +93,6 @@ public class Motherbase : MonoBehaviour
 
         if (resource.TryGetComponent(out Resource component))
         {
-            component.BackToPool();
             component.Disable();
         }
     }

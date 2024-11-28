@@ -1,1 +1,4 @@
-public class ResourcePool : Pool<Resource> { }
+public class ResourcePool : Pool<Resource>
+{
+
+}

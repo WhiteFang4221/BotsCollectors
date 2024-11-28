@@ -76,7 +76,7 @@ public class ResourceSpawner : Spawner<Resource>
     {
         foreach (var existingPosition in _spawnedPositions)
         {
-            if (Vector3.Distance(position, existingPosition) < _minDistance)
+            if (position.IsEnoughClose(existingPosition, _minDistance))
             {
                 return false; 
             }
@@ -89,7 +89,8 @@ public class ResourceSpawner : Spawner<Resource>
     {
         foreach (var position in _spawnedPositions)
         {
-            SpawnObject(position);
+            Resource resource = SpawnObject(position);
+            resource.Disabled += OnResourceDisabled;
         }
     }
 
@@ -102,5 +103,11 @@ public class ResourceSpawner : Spawner<Resource>
         float randomZ = Random.Range(-spawnAreaSize.z / _dividerSpawnArea, spawnAreaSize.z / _dividerSpawnArea);
 
         return spawnAreaCenter + new Vector3(randomX, 0, randomZ);
+    }
+
+    private void OnResourceDisabled(Resource resource)
+    {
+        resource.transform.SetParent(ParentTransform);
+        resource.Disabled -= OnResourceDisabled;
     }
 }

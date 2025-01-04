@@ -98,8 +98,8 @@ public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
 
     private void SendWorkerAtResource()
     {
-        Worker availableWorker = _workers.FirstOrDefault(worker => !worker.IsBusy);
-        Transform availableResource = _foundResources.FirstOrDefault(resource => !_resourceRegistry.ResourceInProgress.Contains(resource));
+        Worker availableWorker = _data.Workers.FirstOrDefault(worker => !worker.IsBusy);
+        Transform availableResource = _data.FoundResources.FirstOrDefault(resource => !_resourceRegistry.ResourceInProgress.Contains(resource));
 
         if (availableWorker != null && availableResource != null)
         {

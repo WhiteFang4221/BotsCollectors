@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: 8185668936578165738}
   - component: {fileID: 12797262308229308}
   - component: {fileID: 3276809083385893250}
-  - component: {fileID: 331892982027319398}
   - component: {fileID: 3044210214386013460}
+  - component: {fileID: 331892982027319398}
   m_Layer: 9
   m_Name: MotherBase
   m_TagString: Untagged
@@ -172,19 +172,7 @@ MonoBehaviour:
   _workerSpawner: {fileID: 6874380838608101091}
   _workerSpawnArea: {fileID: 9060432694347518378}
   _availableResources: 0
---- !u!114 &331892982027319398
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 146968508210642467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6a63344ff13d8b4f90a0839d60d9afc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _panel: {fileID: 0}
+  _flag: {fileID: 181816833810219639, guid: 1e5f39e1111e0e644b641a7313b128d5, type: 3}
 --- !u!114 &3044210214386013460
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +186,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _selectColor: {r: 0.38670126, g: 0.38679248, b: 0.38496798, a: 0.18431373}
+--- !u!114 &331892982027319398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146968508210642467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a63344ff13d8b4f90a0839d60d9afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _panel: {fileID: 0}
 --- !u!1 &1316947760402322327
 GameObject:
   m_ObjectHideFlags: 0

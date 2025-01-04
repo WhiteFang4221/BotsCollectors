@@ -9,7 +9,7 @@ public class ResourceSpawner : Spawner<Resource>
     private BoxCollider _spawnArea;
 
     private List<Vector3> _spawnedPositions = new List<Vector3>();
-    private WaitForSeconds _generateDelay = new WaitForSeconds(20f);
+    private WaitForSeconds _generateDelay = new WaitForSeconds(10f);
 
     private float _dividerSpawnArea = 2f;
 

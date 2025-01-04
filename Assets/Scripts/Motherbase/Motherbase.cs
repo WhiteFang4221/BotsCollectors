@@ -5,23 +5,39 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
+public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePanelEvents, IFlagKeeper
 {
     [SerializeField] private ResourceScanner _resourceScanner;
     [SerializeField] private WorkerSpawner _workerSpawner;
     [SerializeField] private Collider _workerSpawnArea;
-    private MotherbaseData _data = new MotherbaseData();
+    [SerializeField] private int _availableResources = 0;
+
+    private int _minResourceToCreateWorker = 3;
+    private int _minResourceToCreateBase = 5;
 
     private Collider _motherbaseCollider;
+    private List<Worker> _workers = new List<Worker>();
+    private int _minWorkersCount = 3;
+
+    private List<Transform> _foundResources = new List<Transform>();
+    private HashSet<Transform> _resourcesInProgress = new HashSet<Transform>();
 
     private Coroutine _scannerCoroutine;
     private WaitForSeconds _scannerCooldown = new WaitForSeconds(0.5f);
 
     private Coroutine _buildingMotherbaseCoroutine;
 
+    private MotherbaseMediator _motherbaseMediator;
+    private ResourceRegistry _resourceRegistry;
     private Flag _currentFlag;
+
+    private bool _isPanelOpen = false;
     private bool _isMotherbaseBuilding = false;
 
+    public event Action PanelOpened;
+    public event Action PanelClosed;
+    public event Action<int> WorkersCountUpdated;
+    public event Action<int, int> ResourceCountUpdated;
     public event Action<IFlagKeeper> FlagGot;
     public event Action<IFlagKeeper> FlagKeeperDisabled;
 
@@ -41,25 +57,28 @@ public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
     {
         _motherbaseCollider = GetComponent<Collider>();
 
-        for (int i = 0; i < _data.MinWorkersStartCount; i++)
+        for (int i = 0; i < _minWorkersCount; i++)
         {
             _workerSpawner.SpawnWorker(_workerSpawnArea);
         }
+
+        WorkersCountUpdated?.Invoke(_workers.Count);
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
     }
 
     private void Update()
     {
-        if (_scannerCoroutine == null && _data.FoundResources.Count == 0)
+        if (_scannerCoroutine == null && _foundResources.Count == 0)
         {
             StartScannerRoutine();
         }
 
-        if (_currentFlag != null && _isMotherbaseBuilding == false && _data.AvailableResources >= _data.MinResourceToCreateBase)
+        if (_currentFlag != null && _isMotherbaseBuilding == false && _availableResources >= _minResourceToCreateBase)
         {
             SendWorkerBuildNewMotherbase();
         }
 
-        if (_data.FoundResources.Count > 0 && _data.ResourcesInProgress.Count < _data.Workers.Count)
+        if (_foundResources.Count > 0 && _resourcesInProgress.Count < _workers.Count)
         {
             SendWorkerAtResource();
         }
@@ -67,7 +86,28 @@ public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
 
     public void Initialize(MotherbaseMediator mediator, ResourceRegistry resourceRegistry)
     {
-        _data.Initialize(mediator, resourceRegistry);
+        _motherbaseMediator = mediator;
+        _resourceRegistry = resourceRegistry;
+    }
+
+    public void ShowPanel()
+    {
+        _isPanelOpen = true;
+        _motherbaseMediator.SubscribeToEvents(this);
+        PanelOpened?.Invoke();
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+        WorkersCountUpdated?.Invoke(_workers.Count);
+        _motherbaseMediator.WorkerCreateStarted += CreateWorker;
+        _motherbaseMediator.BaseCreateStarted += SetTheFlag;
+    }
+
+    public void HidePanel()
+    {
+        _isPanelOpen = false;
+        _motherbaseMediator.WorkerCreateStarted -= CreateWorker;
+        _motherbaseMediator.BaseCreateStarted -= SetTheFlag;
+        PanelClosed?.Invoke();
+        _motherbaseMediator.UnscribeToEvents(this);
     }
 
     public void SetBuildMotherbasePriority(Flag flag)
@@ -78,23 +118,16 @@ public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
 
     private IEnumerator ScanTheArea()
     {
-        bool _isFound = false;
-
-        while (_isFound == false)
+        while (_foundResources.Count == 0)
         {
-            List<Transform> foundResaources = _resourceScanner.GetResourceInRange();
-
-            if (foundResaources.Count != 0)
-            {
-                _isFound = true;
-            }
-
-            _data.AddFoundResources(foundResaources);
+            _foundResources = _resourceScanner.GetResourceInRange().Where(resource => !_resourceRegistry.ResourceInProgress.Contains(resource)).ToList();
+            _resourceRegistry.RegisterResources(_foundResources);
             yield return _scannerCooldown;
         }
 
         StopScannerRoutine();
     }
+
 
     private void SendWorkerAtResource()
     {
@@ -134,7 +167,7 @@ public class Motherbase : PoolableObject<Motherbase>, IFlagKeeper
     {
         _workerSpawner.SpawnWorker(_workerSpawnArea);
         _availableResources -= _minResourceToCreateWorker;
-        ResourceCountUpdated?.Invoke(_availableResources, _minWorkersStartCount);
+        ResourceCountUpdated?.Invoke(_availableResources, _minWorkersCount);
         WorkersCountUpdated?.Invoke(_workers.Count);
     }
 

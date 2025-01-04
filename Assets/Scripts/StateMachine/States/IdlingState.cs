@@ -8,7 +8,7 @@ public class IdlingState : WorkerState
     {
         if (Worker.TargetTransform != null)
         {
-            StateSwitcher.SwitchState<MoveToResourceState>();
+            StateSwitcher.SwitchState<MoveToTargetState>();
         }
     }
 

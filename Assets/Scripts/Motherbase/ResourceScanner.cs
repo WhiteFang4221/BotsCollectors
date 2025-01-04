@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,6 +16,11 @@ public class ResourceScanner : MonoBehaviour
         float radius = _scanArea.radius * _scanArea.transform.lossyScale.x;
         Collider[] hitColliders = Physics.OverlapSphere(sphereCenter, radius, _resourceMask);
 
+        if (hitColliders.Length == 0)
+        {
+            return foundResources;
+        }
+
         foreach (Collider collider in hitColliders)
         {
             if(collider.TryGetComponent(out Resource resource))
@@ -23,7 +29,9 @@ public class ResourceScanner : MonoBehaviour
             }
         }
 
-        return foundResources.OrderBy(resource => resource.transform.position.SqrDistance(resource.position)).ToList();
+        foundResources = foundResources.Where(resource => resource.gameObject.activeInHierarchy).OrderBy(resource => resource.transform.position.SqrDistance(resource.position)).ToList();
+
+        return foundResources;
     }
 }
 

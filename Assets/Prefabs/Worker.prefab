@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5863350561495252029}
   - component: {fileID: 3928808732802762436}
   - component: {fileID: 3036144963405873071}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,7 +117,7 @@ GameObject:
   - component: {fileID: 4170905006546484706}
   - component: {fileID: 1252648758158436899}
   - component: {fileID: 852759679504717340}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Eye (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -220,7 +220,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5003058485834113007}
   - component: {fileID: 5448863644643882458}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: 'Trunk '
   m_TagString: Untagged
   m_Icon: {fileID: 3306451490063965843, guid: 0000000000000000d000000000000000, type: 0}
@@ -269,7 +269,7 @@ GameObject:
   - component: {fileID: 2815537371002685965}
   - component: {fileID: 1869492437311003259}
   - component: {fileID: 7160834510662913773}
-  m_Layer: 7
+  m_Layer: 0
   m_Name: Worker
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -3,14 +3,37 @@ using UnityEngine;
 
 public class WorkerSpawner : Spawner<Worker>
 {
+    private float _checkRadius = 5f;
+
     public event Action<Worker> WorkerSpawned;
 
     public void SpawnWorker(Collider spawnCollider)
     {
         Vector3 newPosition;
-        newPosition = GetRandomPosition(spawnCollider);
+
+        do
+        {
+            newPosition = GetRandomPosition(spawnCollider);
+        }
+        while (IsPositionOccupied(newPosition));
+
         Worker worker = SpawnObject(newPosition);
         WorkerSpawned?.Invoke(worker);
+    }
+
+    private bool IsPositionOccupied(Vector3 position)
+    {
+        Collider[] colliders = Physics.OverlapSphere(position, _checkRadius);
+
+        foreach (var collider in colliders)
+        {
+            if (collider.TryGetComponent(out Worker worker) == true)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private Vector3 GetRandomPosition(Collider spawnCollider)

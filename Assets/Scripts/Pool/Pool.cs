@@ -18,8 +18,8 @@ public abstract class Pool<T> : MonoBehaviour where T : PoolableObject<T>
         }
 
         T entity = _pool.Dequeue();
-        entity.transform.position = vector;
         entity.gameObject.SetActive(true);
+        entity.transform.position = vector;
 
         return entity;
     }

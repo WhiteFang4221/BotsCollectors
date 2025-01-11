@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5557375323405831567}
   - component: {fileID: 1213280885423328479}
   - component: {fileID: 5753995794294713585}
+<<<<<<< HEAD
   - component: {fileID: 3276809083385893250}
 <<<<<<< HEAD
   - component: {fileID: 12797262308229308}
@@ -22,6 +23,14 @@ GameObject:
   - component: {fileID: 331892982027319398}
   m_Layer: 9
 >>>>>>> parent of e3cdb11 (наделал делов)
+=======
+  - component: {fileID: 8185668936578165738}
+  - component: {fileID: 12797262308229308}
+  - component: {fileID: 3276809083385893250}
+  - component: {fileID: 3044210214386013460}
+  - component: {fileID: 331892982027319398}
+  m_Layer: 9
+>>>>>>> parent of ce86695 (Все сломалось)
   m_Name: MotherBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -117,38 +126,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3276809083385893250
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 146968508210642467}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9cc871d1e08532e43a42a1a4f45d4c7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _resourceScanner: {fileID: 0}
-  _workerSpawner: {fileID: 6874380838608101091}
-  _workerSpawnArea: {fileID: 9060432694347518378}
-  _availableResources: 0
---- !u!208 &12797262308229308
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 146968508210642467}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 1
-  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.5
 --- !u!54 &8185668936578165738
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -177,7 +154,10 @@ Rigidbody:
   m_Constraints: 0
   m_CollisionDetection: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of ce86695 (Все сломалось)
 --- !u!208 &12797262308229308
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -237,7 +217,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _panel: {fileID: 0}
+<<<<<<< HEAD
 >>>>>>> parent of e3cdb11 (наделал делов)
+=======
+>>>>>>> parent of ce86695 (Все сломалось)
 --- !u!1 &1316947760402322327
 GameObject:
   m_ObjectHideFlags: 0
@@ -283,7 +266,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _objectPool: {fileID: 0}
-  _checkRadius: 0.5
 --- !u!1 &6256973887085293303
 GameObject:
   m_ObjectHideFlags: 0
@@ -295,7 +277,7 @@ GameObject:
   - component: {fileID: 3759582036003513205}
   - component: {fileID: 3504697598534768016}
   - component: {fileID: 1026956944586772831}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ScanArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +318,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1
+  m_Radius: 0.82
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1026956944586772831
 MonoBehaviour:
@@ -350,10 +332,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff95589cf8354be4fa9190678be34f50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _resourceLayer:
+  _scanArea: {fileID: 3504697598534768016}
+  _resourceMask:
     serializedVersion: 2
     m_Bits: 256
-  _scanArea: {fileID: 3504697598534768016}
 --- !u!1 &7683355351092403198
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +346,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8389337796839911493}
   - component: {fileID: 9060432694347518378}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: WorkerSpawnArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}

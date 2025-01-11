@@ -28,7 +28,15 @@ public class MoveToMotherbaseState : WorkerState
         {
             Worker.Agent.isStopped = true;
             Worker.Agent.velocity = Vector3.zero;
-            StateSwitcher.SwitchState<GiveResourceState>();
+
+            if (Worker.Trunk.Resources.Count > 0)
+            {
+                StateSwitcher.SwitchState<GiveResourceState>();
+            }
+            else
+            {
+                StateSwitcher.SwitchState<IdlingState>();
+            }
         }
 
         Worker.Agent.SetDestination(_target);

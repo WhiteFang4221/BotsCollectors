@@ -5,6 +5,11 @@ public class WorkerSpawner : Spawner<Worker>
 {
     public event Action<Worker> WorkerSpawned;
 
+    public void InitializePool(WorkerPool pool)
+    {
+        base.InitializePool(pool);
+    }
+
     public void SpawnWorker(Collider spawnCollider)
     {
         Vector3 newPosition;

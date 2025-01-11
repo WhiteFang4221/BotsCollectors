@@ -5,65 +5,46 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePanelEvents, IFlagKeeper
+public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePanelEvents, IFlagSetter, IWorkerEmployer
 {
     [SerializeField] private ResourceScanner _resourceScanner;
-    [SerializeField] private WorkerSpawner _workerSpawner;
     [SerializeField] private Collider _workerSpawnArea;
-    [SerializeField] private int _availableResources = 0;
-
-    private int _minResourceToCreateWorker = 3;
-    private int _minResourceToCreateBase = 5;
-
-    private Collider _motherbaseCollider;
-    private List<Worker> _workers = new List<Worker>();
-    private int _minWorkersCount = 3;
+    [SerializeField] public WorkerSpawner _workerSpawner;
+    [SerializeField] private List<Worker> _workers = new List<Worker>();
 
     private List<Transform> _foundResources = new List<Transform>();
     private HashSet<Transform> _resourcesInProgress = new HashSet<Transform>();
 
-    private Coroutine _scannerCoroutine;
-    private WaitForSeconds _scannerCooldown = new WaitForSeconds(0.5f);
-
-    private Coroutine _buildingMotherbaseCoroutine;
-
     private MotherbaseMediator _motherbaseMediator;
     private ResourceRegistry _resourceRegistry;
-    private Flag _currentFlag;
 
+    private int _availableResources = 0;
+    private int _minResourceToCreateWorker = 3;
+    private int _minResourceToCreateBase = 5;
+
+    private Collider _motherbaseCollider;
+    private Coroutine _sendingWorkerToFlagCoroutine;
+    private Coroutine _scannerCoroutine;
+    private WaitForSeconds _scannerCooldown = new WaitForSeconds(0.5f);
     private bool _isPanelOpen = false;
-    private bool _isMotherbaseBuilding = false;
+
+    public Flag CurrentFlag { get; private set; }
 
     public event Action PanelOpened;
     public event Action PanelClosed;
     public event Action<int> WorkersCountUpdated;
     public event Action<int, int> ResourceCountUpdated;
-    public event Action<IFlagKeeper> FlagGot;
-    public event Action<IFlagKeeper> FlagKeeperDisabled;
 
-    private void OnEnable()
-    {
-        _workerSpawner.WorkerSpawned += AddWorker;
-    }
+    public event Action<IFlagSetter, Flag> FlagGot;
+    public event Action<IFlagSetter> FlagSetterDisabled;
+
+    public event Action<IBaseBuilder> WorkerSent;
 
     private void OnDisable()
     {
         _workerSpawner.WorkerSpawned -= AddWorker;
         StopScannerRoutine();
-        FlagKeeperDisabled?.Invoke(this);
-    }
-
-    private void Start()
-    {
-        _motherbaseCollider = GetComponent<Collider>();
-
-        for (int i = 0; i < _minWorkersCount; i++)
-        {
-            _workerSpawner.SpawnWorker(_workerSpawnArea);
-        }
-
-        WorkersCountUpdated?.Invoke(_workers.Count);
-        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+        FlagSetterDisabled?.Invoke(this);
     }
 
     private void Update()
@@ -73,21 +54,27 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
             StartScannerRoutine();
         }
 
-        if (_currentFlag != null && _isMotherbaseBuilding == false && _availableResources >= _minResourceToCreateBase)
-        {
-            SendWorkerBuildNewMotherbase();
-        }
-
         if (_foundResources.Count > 0 && _resourcesInProgress.Count < _workers.Count)
         {
             SendWorkerAtResource();
         }
     }
 
-    public void Initialize(MotherbaseMediator mediator, ResourceRegistry resourceRegistry)
+    public void Initialize(MotherbaseMediator mediator, ResourceRegistry resourceRegistry, WorkerPool pool)
     {
+        _motherbaseCollider = GetComponent<Collider>();
         _motherbaseMediator = mediator;
         _resourceRegistry = resourceRegistry;
+        _workerSpawner.WorkerSpawned += AddWorker;
+        _workerSpawner.InitializePool(pool);
+        
+        foreach (var worker in _workers)
+        {
+            InitializeWorker(worker);
+        }
+
+        WorkersCountUpdated?.Invoke(_workers.Count);
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
     }
 
     public void ShowPanel()
@@ -97,23 +84,17 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
         PanelOpened?.Invoke();
         ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
         WorkersCountUpdated?.Invoke(_workers.Count);
-        _motherbaseMediator.WorkerCreateStarted += CreateWorker;
+        _motherbaseMediator.WorkerCreateStarted += SpawnWorker;
         _motherbaseMediator.BaseCreateStarted += SetTheFlag;
     }
 
     public void HidePanel()
     {
         _isPanelOpen = false;
-        _motherbaseMediator.WorkerCreateStarted -= CreateWorker;
+        _motherbaseMediator.WorkerCreateStarted -= SpawnWorker;
         _motherbaseMediator.BaseCreateStarted -= SetTheFlag;
         PanelClosed?.Invoke();
         _motherbaseMediator.UnscribeToEvents(this);
-    }
-
-    public void SetBuildMotherbasePriority(Flag flag)
-    {
-        _currentFlag = flag;
-        SendWorkerBuildNewMotherbase();
     }
 
     private IEnumerator ScanTheArea()
@@ -128,7 +109,6 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
         StopScannerRoutine();
     }
 
-
     private void SendWorkerAtResource()
     {
         Worker availableWorker = _workers.FirstOrDefault(worker => !worker.IsBusy);
@@ -142,33 +122,85 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
             {
                 _resourcesInProgress.Add(availableResource);
                 _resourceRegistry.RegisterResourceInProgress(availableResource);
-                availableWorker.ResourceHasGiven += OnResourceCollected;
                 availableWorker.SetTarget(availableResource);
+                availableWorker.ResourceHasGiven += OnResourceCollected;
             }
         }
     }
 
-    private void SendWorkerBuildNewMotherbase()
+    public void SetBuildMotherbasePriority(Flag flag)
     {
-        if (_workers.FirstOrDefault(worker => !worker.IsBusy))
-        {
-            Worker availableWorker = _workers.FirstOrDefault(worker => !worker.IsBusy);
-            availableWorker.SetTarget(_currentFlag.transform);
-            _isMotherbaseBuilding = true;
-        }
+        CurrentFlag = flag;
+        StartSendWorkerToFlagRoutine();
+    }
+
+    public void HireWorker(Worker worker)
+    {
+        AddWorker(worker);
     }
 
     private void SetTheFlag()
     {
-        FlagGot?.Invoke(this);
+        FlagGot?.Invoke(this, CurrentFlag);
     }
 
-    private void CreateWorker()
+    private IEnumerator SendWorkerToFlag()
+    {
+        while (_availableResources < _minResourceToCreateBase)
+        {
+            yield return null;
+        }
+
+        RemoveResource(_minResourceToCreateBase);
+
+        while (IsWorkerSentToFlag() == false)
+        {
+            yield return null;
+        }
+    }
+
+    private bool IsWorkerSentToFlag()
+    {
+        if (_workers.FirstOrDefault(worker => !worker.IsBusy))
+        {
+            Worker availableWorker = _workers.FirstOrDefault(worker => !worker.IsBusy);
+            availableWorker.SetTarget(CurrentFlag.transform);
+            WorkerSent.Invoke(availableWorker);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void SpawnWorker()
     {
         _workerSpawner.SpawnWorker(_workerSpawnArea);
         _availableResources -= _minResourceToCreateWorker;
-        ResourceCountUpdated?.Invoke(_availableResources, _minWorkersCount);
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
         WorkersCountUpdated?.Invoke(_workers.Count);
+    }
+
+    private void AddWorker(Worker worker)
+    {
+        _workers.Add(worker);
+        InitializeWorker(worker);
+    }
+
+    private void DismissWorker(Worker worker)
+    {
+        _workers.Remove(worker);
+
+        worker.QuitMotherbase -= OnWorkerQuit;
+        UpdateWorkersCount();
+    }
+
+    private void InitializeWorker(Worker worker)
+    {
+        worker.QuitMotherbase += OnWorkerQuit;
+        UpdateWorkersCount();
+        worker.InitializeMotherbaseCollider(_motherbaseCollider);
     }
 
     private void OnResourceCollected(Worker worker, Transform resource)
@@ -182,29 +214,47 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
         _resourcesInProgress.Remove(resource);
         _resourceRegistry.UnregisterResourceInProgress(resource);
         worker.ResourceHasGiven -= OnResourceCollected;
-        ReceiveResource();
+        AddResource();
     }
 
-    private void ReceiveResource()
+    private void OnWorkerQuit(Worker worker)
+    {
+        CurrentFlag = null;
+        DismissWorker(worker);
+    }
+
+    private void AddResource()
     {
         _availableResources++;
-
-        if (_isPanelOpen)
-        {
-            ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
-        }
+        UpdateResourceCount();
     }
 
-    private void AddWorker(Worker worker)
+    private void RemoveResource(int count)
     {
-        _workers.Add(worker);
+        _availableResources -= count;
 
+        if (_availableResources < 0)
+        {
+            _availableResources = 0;
+        }
+
+        UpdateResourceCount();
+    }
+
+    private void UpdateWorkersCount()
+    {
         if (_isPanelOpen)
         {
             WorkersCountUpdated?.Invoke(_workers.Count);
         }
+    }
 
-        worker.InitializeMotherbase(_motherbaseCollider);
+    private void UpdateResourceCount()
+    {
+        if (_isPanelOpen)
+        {
+            ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+        }
     }
 
     private void StartScannerRoutine()
@@ -219,6 +269,21 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
         {
             StopCoroutine(_scannerCoroutine);
             _scannerCoroutine = null;
+        }
+    }
+
+    private void StartSendWorkerToFlagRoutine()
+    {
+        StopSendWorkerToFlagRoutine();
+        _sendingWorkerToFlagCoroutine = StartCoroutine(SendWorkerToFlag());
+    }
+
+    private void StopSendWorkerToFlagRoutine()
+    {
+        if (_sendingWorkerToFlagCoroutine != null)
+        {
+            StopCoroutine(_sendingWorkerToFlagCoroutine);
+            _sendingWorkerToFlagCoroutine = null;
         }
     }
 }

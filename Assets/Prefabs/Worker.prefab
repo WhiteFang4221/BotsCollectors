@@ -219,7 +219,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5003058485834113007}
-  - component: {fileID: 5448863644643882458}
+  - component: {fileID: 5001417708764752122}
   m_Layer: 7
   m_Name: 'Trunk '
   m_TagString: Untagged
@@ -242,7 +242,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6529968961332331375}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5448863644643882458
+--- !u!114 &5001417708764752122
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -403,7 +403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 102cd7cf543e04342bd776dd5093e68c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trunk: {fileID: 5448863644643882458}
+  _trunk: {fileID: 5001417708764752122}
 --- !u!195 &7160834510662913773
 NavMeshAgent:
   m_ObjectHideFlags: 0

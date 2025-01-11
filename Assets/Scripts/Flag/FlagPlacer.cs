@@ -1,18 +1,18 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class FlagPlacer : MonoBehaviour
 {
     [SerializeField] private Flag _flagPrefab;
-    private FlagPlacementValidator _placementValidator;
-
-    private InputHandler _inputHandler;
-    private IFlagKeeper _currentFlagKeeper;
+    [SerializeField] private LayerMask _flagLayerBeforeSet;
+    [SerializeField] private LayerMask _flagLayer;
+    private IFlagSetter _currentFlagSetter;
     private Flag _currentFlag;
-
+    private InputHandler _inputHandler;
+    private FlagPlacementValidator _placementValidator;
     private Coroutine _flagPositionCoroutine;
+    private Vector3 _previousFlagPosition;
 
     private void OnDisable()
     {
@@ -26,34 +26,41 @@ public class FlagPlacer : MonoBehaviour
         _inputHandler = inputHandler;
         _inputHandler.Input.FlagPlacement.LeftClick.started += TryPutTheFlag;
         _inputHandler.Input.FlagPlacement.RightClick.started += CancelPutTheFlag;
-        _inputHandler.Input.FlagPlacement.Disable(); 
+        _inputHandler.Input.FlagPlacement.Disable();
     }
 
-    public void ListenMotherbase(IFlagKeeper flagKeeper)
+    public void ListenMotherbase(IFlagSetter flagSetter)
     {
-        flagKeeper.FlagGot += GetFlag;
-        flagKeeper.FlagKeeperDisabled += UnlistenMotherbase;
+        flagSetter.FlagGot += TakeFlag;
+        flagSetter.FlagSetterDisabled += UnlistenMotherbase;
     }
 
-    public void UnlistenMotherbase(IFlagKeeper flagKeeper)
+    public void UnlistenMotherbase(IFlagSetter flagSetter)
     {
-        flagKeeper.FlagGot -= GetFlag;
-        flagKeeper.FlagKeeperDisabled -= UnlistenMotherbase;
+        flagSetter.FlagGot -= TakeFlag;
+        flagSetter.FlagSetterDisabled -= UnlistenMotherbase;
     }
 
-    private void GetFlag(IFlagKeeper flagKeeper)
+    private void TakeFlag(IFlagSetter flagSetter, Flag motherbaseFlag)
     {
-        if (_currentFlag == null) 
+        if (motherbaseFlag == null)
         {
             _currentFlag = Instantiate(_flagPrefab);
+        }
+        else
+        {
+            _currentFlag = motherbaseFlag;
+            _previousFlagPosition = _currentFlag.transform.position;
+            LayerChanger.SetLayerRecursively(_currentFlag.gameObject, _flagLayerBeforeSet);
         }
 
         if (_currentFlag.TryGetComponent(out FlagPlacementValidator placementValidator))
         {
             _placementValidator = placementValidator;
         }
+        else return;
 
-        _currentFlagKeeper = flagKeeper;
+        _currentFlagSetter = flagSetter;
         _inputHandler.Input.CameraMovement.Disable();
         _inputHandler.Input.FlagPlacement.Enable();
         StartUpdateFlagPositionCoroutine();
@@ -79,9 +86,16 @@ public class FlagPlacer : MonoBehaviour
     {
         if (_placementValidator.IsValidPlace)
         {
-            _placementValidator.SetOffRenderer();
+            LayerChanger.SetLayerRecursively(_currentFlag.gameObject, _flagLayer);
             StopUpdateFlagPositionCoroutine();
-            _currentFlagKeeper.SetBuildMotherbasePriority(_currentFlag);
+
+            if (_currentFlagSetter.CurrentFlag == null)
+            {
+                _currentFlagSetter.SetBuildMotherbasePriority(_currentFlag);
+            }
+
+            _placementValidator.SetOffRenderer();
+            _currentFlag = null;
             _inputHandler.Input.CameraMovement.Enable();
             _inputHandler.Input.FlagPlacement.Disable();
         }
@@ -90,7 +104,17 @@ public class FlagPlacer : MonoBehaviour
     private void CancelPutTheFlag(InputAction.CallbackContext context)
     {
         StopUpdateFlagPositionCoroutine();
-        DeleteFlag(_currentFlag);
+
+        if (_currentFlagSetter.CurrentFlag != null)
+        {
+            _currentFlag.transform.position = _previousFlagPosition;
+            _placementValidator.SetOffRenderer();
+        }
+        else
+        {
+            DeleteFlag(_currentFlag);
+        }
+
         _currentFlag = null;
         _inputHandler.Input.FlagPlacement.Disable();
     }

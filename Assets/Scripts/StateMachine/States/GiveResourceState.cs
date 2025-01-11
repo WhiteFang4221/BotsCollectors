@@ -8,6 +8,7 @@ public class GiveResourceState : WorkerState
     private float _tolerance = 0.01f;
 
     public GiveResourceState(IStateSwitcher stateSwitcher, WorkerStateMachineData data, Worker worker) : base(stateSwitcher, data, worker) { }
+
     public override void Enter()
     {
         _resourceTransform = Worker.TargetTransform;
@@ -22,6 +23,7 @@ public class GiveResourceState : WorkerState
     {
         if (_resourceTransform.position.IsEnoughClose(_motherbaseTransform.position, _tolerance))
         {
+            Worker.Trunk.RemoveResource(_resourceTransform);
             Worker.GiveResourceToBase(_resourceTransform);
             StateSwitcher.SwitchState<IdlingState>();
         }

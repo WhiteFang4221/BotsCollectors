@@ -1,15 +1,15 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider))]
+
 public class FlagPlacementValidator : MonoBehaviour
 {
-    [SerializeField] private LayerMask _groundLayer; 
-    [SerializeField] private LayerMask invalidPlacementLayers;
-    [SerializeField] private Material _validMaterial;
-    [SerializeField] private Material _invalidMaterial;
     [SerializeField] private Renderer _renderer;
     [SerializeField] private BoxCollider _boxCollider;
+    [SerializeField] private Material _validMaterial;
+    [SerializeField] private Material _invalidMaterial;
+    [SerializeField] private LayerMask _groundLayer; 
+    [SerializeField] private LayerMask invalidPlacementLayers;
     
     private float _raycastLength = 1f;
     private float _zCenterDivider = 2f;

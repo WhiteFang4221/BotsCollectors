@@ -28,7 +28,7 @@ public class MoveToTargetState : WorkerState
             }
             else if (_target.gameObject.TryGetComponent(out Flag flag))
             {
-                StateSwitcher.SwitchState<BuildingNewMotherbaseState>();
+                StateSwitcher.SwitchState<BuildingMotherbaseState>();
             }
         }
 

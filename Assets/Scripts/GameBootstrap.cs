@@ -6,9 +6,12 @@ public class GameBootstrap : MonoBehaviour
     [SerializeField] private CameraMovement _cameraMovement;
     [SerializeField] private CursorIntaractionHandler _cursorIntaractionHandler;
     [SerializeField] private Camera _camera;
-    [SerializeField] private List<ResourceSpawner> _resourceSpawners;
-    [SerializeField] private MotherbaseSpawner _motherbaseSpawner;
+    [SerializeField] private LayerMask _cursorIgnoreRaycastLayers;
     [SerializeField] private List<Motherbase> _motherbases;
+    [SerializeField] private List<ResourceSpawner> _resourceSpawners;
+    [SerializeField] private WorkerPool _workerPool;
+    [SerializeField] private MotherbaseSpawner _motherbaseSpawner;
+    [SerializeField] private MotherbaseBuilder _motherbaseBuilder;
     [SerializeField] private MotherbaseMediator _motherbaseMediator;
     [SerializeField] private ResourceRegistry _resourceRegistry;
     [SerializeField] private FlagPlacer _flagPlacer;
@@ -21,12 +24,13 @@ public class GameBootstrap : MonoBehaviour
     {
         _input = new GameInput();
         _input.Enable();
-        _inputHandler = new InputHandler(_camera, _input);
+        _inputHandler = new InputHandler(_camera, _input, _cursorIgnoreRaycastLayers);
         _flagPlacer.Initialize(_inputHandler);
         _cameraMovement.Initialize(_inputHandler);
         _cursorIntaractionHandler.Initialize(_inputHandler);
-        _motherbaseSpawner.Initialize(_motherbaseMediator, _resourceRegistry, _flagPlacer);
         InitializeMotherbases();
+        _motherbaseBuilder.Initialize(_motherbaseSpawner);
+        _motherbaseSpawner.Initialize(_motherbaseMediator, _resourceRegistry, _flagPlacer, _workerPool, _motherbaseBuilder);
         GenerateResources();
     }
 
@@ -47,8 +51,10 @@ public class GameBootstrap : MonoBehaviour
     {
         foreach (var motherbase in _motherbases)
         {
-            motherbase.Initialize(_motherbaseMediator, _resourceRegistry);
+            motherbase.Initialize(_motherbaseMediator, _resourceRegistry, _workerPool);
+            
             _flagPlacer.ListenMotherbase(motherbase);
+            _motherbaseBuilder.ListenMotherbase(motherbase);
         }
     }
 }

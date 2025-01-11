@@ -8,18 +8,11 @@ public class CameraMovement : MonoBehaviour
 
     private InputHandler _inputHandler;
     private ICameraMovementHandler _cameraMovementHandler;
-
     private bool _isDragEnabled;
 
     private void Awake()
     {
         _cameraMovementHandler = CreateMovementHandler();
-    }
-
-    private void OnDisable()
-    {
-        _inputHandler.Input.CameraMovement.Click.started -= OnClickStarted;
-        _inputHandler.Input.CameraMovement.Click.canceled -= OnClickCanceled;
     }
 
     public void Initialize(InputHandler inputHandler)
@@ -29,6 +22,11 @@ public class CameraMovement : MonoBehaviour
         _inputHandler.Input.CameraMovement.Click.canceled += OnClickCanceled;
     }
 
+    private void OnDisable()
+    {
+        _inputHandler.Input.CameraMovement.Click.started -= OnClickStarted;
+        _inputHandler.Input.CameraMovement.Click.canceled -= OnClickCanceled;
+    }
 
     private void Update()
     {

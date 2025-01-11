@@ -23,6 +23,7 @@ public class LoadingResourceState : WorkerState
         if (_resourceTransform.position.IsEnoughClose(_trunkTransform.position, _tolerance))
         {
             _resourceTransform.SetParent(_trunkTransform);
+            Worker.Trunk.AddResource(_resourceTransform);
             StateSwitcher.SwitchState<MoveToMotherbaseState>();
         }
         else

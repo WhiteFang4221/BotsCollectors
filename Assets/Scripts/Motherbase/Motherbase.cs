@@ -21,6 +21,7 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
     private int _availableResources = 0;
     private int _minResourceToCreateWorker = 3;
     private int _minResourceToCreateBase = 5;
+    private int _minWorkersOnBase = 1;
 
     private Collider _motherbaseCollider;
     private Coroutine _sendingWorkerToFlagCoroutine;
@@ -141,7 +142,14 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
 
     private void SetTheFlag()
     {
-        FlagGot?.Invoke(this, CurrentFlag);
+        if (_workers.Count > _minWorkersOnBase)
+        {
+            FlagGot?.Invoke(this, CurrentFlag);
+        }
+        else
+        {
+            Debug.Log("Слишком мало работников на базе");
+        }
     }
 
     private IEnumerator SendWorkerToFlag()

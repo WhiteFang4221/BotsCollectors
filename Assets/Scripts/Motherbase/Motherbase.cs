@@ -5,10 +5,15 @@ using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
+<<<<<<< HEAD
 public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePanelEvents, IFlagSetter, IWorkerEmployer
+=======
+public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePanelEvents, IFlagKeeper
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
 {
     [SerializeField] private ResourceScanner _resourceScanner;
     [SerializeField] private Collider _workerSpawnArea;
+<<<<<<< HEAD
     [SerializeField] public WorkerSpawner _workerSpawner;
     [SerializeField] private List<Worker> _workers = new List<Worker>();
 
@@ -19,17 +24,31 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
     private ResourceRegistry _resourceRegistry;
 
     private int _availableResources = 0;
+=======
+    [SerializeField] private int _availableResources = 0;
+
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     private int _minResourceToCreateWorker = 3;
     private int _minResourceToCreateBase = 5;
 
     private Collider _motherbaseCollider;
+<<<<<<< HEAD
     private Coroutine _sendingWorkerToFlagCoroutine;
+=======
+    private List<Worker> _workers = new List<Worker>();
+    private int _minWorkersCount = 3;
+
+    private List<Transform> _foundResources = new List<Transform>();
+    private HashSet<Transform> _resourcesInProgress = new HashSet<Transform>();
+
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     private Coroutine _scannerCoroutine;
     private WaitForSeconds _scannerCooldown = new WaitForSeconds(0.5f);
     private bool _isPanelOpen = false;
 
     public Flag CurrentFlag { get; private set; }
 
+<<<<<<< HEAD
     public event Action PanelOpened;
     public event Action PanelClosed;
     public event Action<int> WorkersCountUpdated;
@@ -37,6 +56,21 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
 
     public event Action<IFlagSetter, Flag> FlagGot;
     public event Action<IFlagSetter> FlagSetterDisabled;
+=======
+    private MotherbaseMediator _motherbaseMediator;
+    private ResourceRegistry _resourceRegistry;
+    private Flag _currentFlag;
+
+    private bool _isPanelOpen = false;
+    private bool _isMotherbaseBuilding = false;
+
+    public event Action PanelOpened;
+    public event Action PanelClosed;
+    public event Action<int> WorkersCountUpdated;
+    public event Action<int, int> ResourceCountUpdated;
+    public event Action<IFlagKeeper> FlagGot;
+    public event Action<IFlagKeeper> FlagKeeperDisabled;
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
 
     public event Action<IBaseBuilder> WorkerSent;
 
@@ -44,7 +78,24 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
     {
         _workerSpawner.WorkerSpawned -= AddWorker;
         StopScannerRoutine();
+<<<<<<< HEAD
         FlagSetterDisabled?.Invoke(this);
+=======
+        FlagKeeperDisabled?.Invoke(this);
+    }
+
+    private void Start()
+    {
+        _motherbaseCollider = GetComponent<Collider>();
+
+        for (int i = 0; i < _minWorkersCount; i++)
+        {
+            _workerSpawner.SpawnWorker(_workerSpawnArea);
+        }
+
+        WorkersCountUpdated?.Invoke(_workers.Count);
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     }
 
     private void Update()
@@ -54,6 +105,14 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
             StartScannerRoutine();
         }
 
+<<<<<<< HEAD
+=======
+        if (_currentFlag != null && _isMotherbaseBuilding == false && _availableResources >= _minResourceToCreateBase)
+        {
+            SendWorkerBuildNewMotherbase();
+        }
+
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
         if (_foundResources.Count > 0 && _resourcesInProgress.Count < _workers.Count)
         {
             SendWorkerAtResource();
@@ -62,6 +121,7 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
 
     public void Initialize(MotherbaseMediator mediator, ResourceRegistry resourceRegistry, WorkerPool pool)
     {
+<<<<<<< HEAD
         _motherbaseCollider = GetComponent<Collider>();
         _motherbaseMediator = mediator;
         _resourceRegistry = resourceRegistry;
@@ -75,6 +135,30 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
 
         WorkersCountUpdated?.Invoke(_workers.Count);
         ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+=======
+        _motherbaseMediator = mediator;
+        _resourceRegistry = resourceRegistry;
+    }
+
+    public void ShowPanel()
+    {
+        _isPanelOpen = true;
+        _motherbaseMediator.SubscribeToEvents(this);
+        PanelOpened?.Invoke();
+        ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+        WorkersCountUpdated?.Invoke(_workers.Count);
+        _motherbaseMediator.WorkerCreateStarted += CreateWorker;
+        _motherbaseMediator.BaseCreateStarted += SetTheFlag;
+    }
+
+    public void HidePanel()
+    {
+        _isPanelOpen = false;
+        _motherbaseMediator.WorkerCreateStarted -= CreateWorker;
+        _motherbaseMediator.BaseCreateStarted -= SetTheFlag;
+        PanelClosed?.Invoke();
+        _motherbaseMediator.UnscribeToEvents(this);
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     }
 
     public void ShowPanel()
@@ -108,6 +192,7 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
 
         StopScannerRoutine();
     }
+
 
     private void SendWorkerAtResource()
     {
@@ -178,7 +263,11 @@ public class Motherbase : PoolableObject<Motherbase>, IShowPanel, IMotherbasePan
     {
         _workerSpawner.SpawnWorker(_workerSpawnArea);
         _availableResources -= _minResourceToCreateWorker;
+<<<<<<< HEAD
         ResourceCountUpdated?.Invoke(_availableResources, _minResourceToCreateWorker);
+=======
+        ResourceCountUpdated?.Invoke(_availableResources, _minWorkersCount);
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
         WorkersCountUpdated?.Invoke(_workers.Count);
     }
 

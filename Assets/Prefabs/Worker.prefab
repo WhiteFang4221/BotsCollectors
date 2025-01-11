@@ -219,7 +219,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5003058485834113007}
+<<<<<<< HEAD
   - component: {fileID: 5001417708764752122}
+=======
+  - component: {fileID: 5448863644643882458}
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
   m_Layer: 7
   m_Name: 'Trunk '
   m_TagString: Untagged

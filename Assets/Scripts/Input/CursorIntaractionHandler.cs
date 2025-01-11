@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class CursorIntaractionHandler : MonoBehaviour
 {
     private InputHandler _inputHandler;
+<<<<<<< HEAD
     private Selectable _hoveredSelectable;
     private Selectable _clickedSelectable;
     private IShowPanel _currentObject;
@@ -14,12 +15,21 @@ public class CursorIntaractionHandler : MonoBehaviour
     {
         _inputHandler.Input.Mouse.Click.started -= OnClickStarted;
         _inputHandler.Input.Mouse.MousePosition.performed -= OnMouseMoved;
+=======
+    private Selectable _currentSelectable;
+    private IShowPanel _currentObject;
+
+    private void OnDisable()
+    {
+        _inputHandler.Input.Mouse.Click.started -= OnClickStarted;
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     }
 
     public void Initialize(InputHandler inputHandler)
     {
         _inputHandler = inputHandler;
         _inputHandler.Input.Mouse.Click.started += OnClickStarted;
+<<<<<<< HEAD
         _inputHandler.Input.Mouse.MousePosition.performed += OnMouseMoved;
     }
 
@@ -35,6 +45,17 @@ public class CursorIntaractionHandler : MonoBehaviour
     }
 
     private void UpdateHoveredObject()
+=======
+        
+    }
+
+    private void LateUpdate()
+    {
+        SelectObjectUnderCursor();
+    }
+
+    private void SelectObjectUnderCursor()
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     {
         RaycastHit hit = _inputHandler.GetCursorPosition();
 
@@ -42,6 +63,7 @@ public class CursorIntaractionHandler : MonoBehaviour
         {
             if (hit.collider.TryGetComponent(out Selectable selectable))
             {
+<<<<<<< HEAD
                 if (_hoveredSelectable != selectable)
                 {
                     DeselectObject(_hoveredSelectable);
@@ -61,6 +83,23 @@ public class CursorIntaractionHandler : MonoBehaviour
         else
         {
             DeselectObject(_hoveredSelectable);
+=======
+                if (_currentSelectable != selectable)
+                {
+                    DeselectObject();
+                }
+
+                SelectObject(selectable);
+            }
+            else
+            {
+                DeselectObject();
+            }
+        } 
+        else
+        {
+            DeselectObject();
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
         }
     }
 
@@ -71,11 +110,14 @@ public class CursorIntaractionHandler : MonoBehaviour
             return;
         }
 
+<<<<<<< HEAD
         SelectClickedObject();
     }
 
     private void SelectClickedObject()
     {
+=======
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
         RaycastHit hit = _inputHandler.GetCursorPosition();
 
         if (IsColliderExist(hit))
@@ -89,6 +131,7 @@ public class CursorIntaractionHandler : MonoBehaviour
 
                 _currentObject = @object;
                 _currentObject.ShowPanel();
+<<<<<<< HEAD
             }
             else
             {
@@ -110,18 +153,54 @@ public class CursorIntaractionHandler : MonoBehaviour
                     _hoveredSelectable = null;
                 }
 
+=======
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
                 return;
             }
             else
             {
+<<<<<<< HEAD
                 DeselectObject(_clickedSelectable);
             }
         }
+=======
+                HideCurrentPanel();
+                return;
+            }
+        }
+
+        HideCurrentPanel();
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     }
 
     private bool IsColliderExist(RaycastHit hit)
     {
+<<<<<<< HEAD
         return hit.collider != null;
+=======
+
+        if (hit.collider != null)
+        {
+            return true;
+        }
+
+        return false;
+    } 
+
+    private void SelectObject(Selectable selectable)
+    {
+        _currentSelectable = selectable;
+        _currentSelectable.Select();
+    }
+
+    private void DeselectObject()
+    {
+        if (_currentSelectable != null)
+        {
+            _currentSelectable.Deselect();
+            _currentSelectable = null;
+        }
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     }
 
     private void HideCurrentPanel()
@@ -131,6 +210,7 @@ public class CursorIntaractionHandler : MonoBehaviour
             _currentObject.HidePanel();
         }
     }
+<<<<<<< HEAD
 
     private void SelectObject(Selectable selectable)
     {
@@ -146,4 +226,6 @@ public class CursorIntaractionHandler : MonoBehaviour
             selectable = null;
         }
     }
+=======
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
 }

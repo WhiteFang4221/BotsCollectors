@@ -8,6 +8,10 @@ public class CameraMovement : MonoBehaviour
 
     private InputHandler _inputHandler;
     private ICameraMovementHandler _cameraMovementHandler;
+<<<<<<< HEAD
+=======
+
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     private bool _isDragEnabled;
 
     private void Awake()
@@ -15,6 +19,15 @@ public class CameraMovement : MonoBehaviour
         _cameraMovementHandler = CreateMovementHandler();
     }
 
+<<<<<<< HEAD
+=======
+    private void OnDisable()
+    {
+        _inputHandler.Input.CameraMovement.Click.started -= OnClickStarted;
+        _inputHandler.Input.CameraMovement.Click.canceled -= OnClickCanceled;
+    }
+
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
     public void Initialize(InputHandler inputHandler)
     {
         _inputHandler = inputHandler;
@@ -22,11 +35,14 @@ public class CameraMovement : MonoBehaviour
         _inputHandler.Input.CameraMovement.Click.canceled += OnClickCanceled;
     }
 
+<<<<<<< HEAD
     private void OnDisable()
     {
         _inputHandler.Input.CameraMovement.Click.started -= OnClickStarted;
         _inputHandler.Input.CameraMovement.Click.canceled -= OnClickCanceled;
     }
+=======
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
 
     private void Update()
     {

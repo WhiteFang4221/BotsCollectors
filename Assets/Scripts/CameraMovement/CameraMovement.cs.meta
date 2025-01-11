@@ -1,5 +1,17 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scripts/CameraMovement/CameraMovement.cs.meta
 guid: a1ab101153d391a409a5bd25a641bd80
+========
+<<<<<<< HEAD
+<<<<<<< HEAD
+guid: 1b2a96feaa6fdbb4fa6dcb49e7fcf16e
+=======
+guid: ff95589cf8354be4fa9190678be34f50
+>>>>>>> parent of e3cdb11 (наделал делов)
+=======
+guid: ff95589cf8354be4fa9190678be34f50
+>>>>>>> parent of ce86695 (Все сломалось)
+>>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8:Assets/Scripts/Motherbase/ResourceScanner.cs.meta
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2

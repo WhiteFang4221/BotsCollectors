@@ -15,7 +15,11 @@ public class WorkerStateMachine : IStateSwitcher
         {
             new IdlingState(this, data, worker),
             new MoveToTargetState(this, data, worker),
+<<<<<<< HEAD
             new BuildingMotherbaseState(this, data, worker),
+=======
+            new BuildingNewMotherbaseState(this, data, worker),
+>>>>>>> ec5cbbcbc3b4ad89f95722c6c941dafc1256bde8
             new LoadingResourceState(this, data, worker),
             new MoveToMotherbaseState(this, data, worker),
             new GiveResourceState(this, data, worker),

@@ -13,9 +13,15 @@ GameObject:
   - component: {fileID: 1213280885423328479}
   - component: {fileID: 5753995794294713585}
   - component: {fileID: 3276809083385893250}
+<<<<<<< HEAD
   - component: {fileID: 12797262308229308}
   - component: {fileID: 8185668936578165738}
   m_Layer: 0
+=======
+  - component: {fileID: 3044210214386013460}
+  - component: {fileID: 331892982027319398}
+  m_Layer: 9
+>>>>>>> parent of e3cdb11 (наделал делов)
   m_Name: MotherBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -170,6 +176,68 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+<<<<<<< HEAD
+=======
+--- !u!208 &12797262308229308
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146968508210642467}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.5, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
+--- !u!114 &3276809083385893250
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146968508210642467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cc871d1e08532e43a42a1a4f45d4c7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _resourceScanner: {fileID: 1026956944586772831}
+  _workerSpawner: {fileID: 6874380838608101091}
+  _workerSpawnArea: {fileID: 9060432694347518378}
+  _availableResources: 0
+  _flag: {fileID: 181816833810219639, guid: 1e5f39e1111e0e644b641a7313b128d5, type: 3}
+--- !u!114 &3044210214386013460
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146968508210642467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62ce4860206f7f34bb7e99cb74458b1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _selectColor: {r: 0.38670126, g: 0.38679248, b: 0.38496798, a: 0.18431373}
+--- !u!114 &331892982027319398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 146968508210642467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6a63344ff13d8b4f90a0839d60d9afc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _panel: {fileID: 0}
+>>>>>>> parent of e3cdb11 (наделал делов)
 --- !u!1 &1316947760402322327
 GameObject:
   m_ObjectHideFlags: 0
